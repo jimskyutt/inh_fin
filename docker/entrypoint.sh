@@ -37,13 +37,36 @@ php /var/www/html/artisan view:cache
 php /var/www/html/artisan migrate --force
 
 # Start PHP-FPM in the background
+echo "Starting PHP-FPM..."
 php-fpm -D -y /usr/local/etc/php-fpm.conf -F -R
 
 # Test Nginx configuration
-nginx -t
+echo "Testing Nginx configuration..."
+if ! nginx -t; then
+    echo "Nginx configuration test failed"
+    exit 1
+fi
 
-# Start Nginx in the foreground
+# Start Nginx in the background
+echo "Starting Nginx..."
 nginx -g 'daemon off;' &
+
+# Wait for services to start
+sleep 5
+
+# Check if Nginx is running
+if ! pgrep "nginx" > /dev/null; then
+    echo "Nginx failed to start"
+    exit 1
+fi
+
+# Check if PHP-FPM is running
+if ! pgrep "php-fpm" > /dev/null; then
+    echo "PHP-FPM is not running"
+    exit 1
+fi
+
+echo "Services are running. Showing logs..."
 
 # Keep the container running and show logs
 tail -f /var/log/nginx/error.log /var/log/nginx/access.log
