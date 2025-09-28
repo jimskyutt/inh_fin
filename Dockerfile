@@ -20,21 +20,21 @@ COPY . .
 
 # Generate the application key
 RUN php artisan key:generate --ansi
-
 # Build assets
 FROM node:18 as frontend
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy all necessary files for frontend build
+COPY package*.json .
 COPY vite.config.js .
+COPY tailwind.config.js .
+COPY postcss.config.js .
+COPY resources/ ./resources/
 
 # Install dependencies and build assets
 RUN npm install && \
     npm run build
-
-# Production stage
 FROM php:8.2-fpm
 
 # Install system dependencies
