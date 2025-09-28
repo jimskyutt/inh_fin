@@ -5,6 +5,10 @@ set -e
 mkdir -p /var/run/php/
 mkdir -p /var/run/nginx/
 
+# Ensure proper permissions for PHP-FPM socket
+chown -R www-data:www-data /var/run/php
+chmod 755 /var/run/php
+
 # Set permissions
 chown -R www-data:www-data /var/www/html/storage
 chown -R www-data:www-data /var/www/html/bootstrap/cache
@@ -30,7 +34,7 @@ php /var/www/html/artisan view:cache
 php /var/www/html/artisan migrate --force
 
 # Start PHP-FPM
-php-fpm -D
+php-fpm -D -y /usr/local/etc/php-fpm.conf -F -R
 
 # Start Nginx
 nginx -g 'daemon off;'

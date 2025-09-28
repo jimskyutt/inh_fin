@@ -61,6 +61,10 @@ RUN pecl install redis && docker-php-ext-enable redis
 # Configure PHP
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
+# Configure PHP-FPM
+RUN mkdir -p /var/run/php
+COPY docker/php-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
+
 # Configure Nginx
 COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY docker/nginx/site.conf /etc/nginx/sites-available/default
@@ -81,7 +85,7 @@ COPY docker/entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose port 80
-EXPOSE 80
+EXPOSE 80 9000
 
 # Start the application
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
