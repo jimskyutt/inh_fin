@@ -74,18 +74,28 @@ WORKDIR /var/www/html
 COPY --from=vendor /app .
 COPY --from=frontend /app/public/build /var/www/html/public/build
 
-# Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage \
     && chown -R www-data:www-data /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
-# Copy entrypoint script
+# Copy entrypoint script and make it executable
 COPY docker/entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Expose port 80
-EXPOSE 80 9000
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost/ || exit 1
+
+# Start services
+CMD ["/usr/local/bin/entrypoint.sh"]
+
+# Expose ports for Nginx and PHP-FPM
+EXPOSE 80 443 9000
+
+# Set environment variables for Nginx and PHP-FPM
+ENV PORT=80
+ENV PHP_FPM_PORT=9000
 
 # Start the application
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
