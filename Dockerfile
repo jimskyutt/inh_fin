@@ -18,6 +18,9 @@ RUN composer install \
 # Copy application files
 COPY . .
 
+# Create .env from .env.example if it doesn't exist
+RUN if [ ! -f .env ]; then cp .env.example .env; fi
+
 # Generate the application key
 RUN php artisan key:generate --ansi
 # Build assets
