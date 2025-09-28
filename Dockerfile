@@ -51,8 +51,9 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
+    libpq-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql mbstring exif pcntl bcmath zip
+    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql pdo_pgsql pgsql mbstring exif pcntl bcmath zip
 
 # Install Redis extension
 RUN pecl install redis && docker-php-ext-enable redis
