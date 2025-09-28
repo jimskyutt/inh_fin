@@ -16,11 +16,7 @@ use App\Models\OnlineUser;
 |
 */
 
-// Message routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::delete('/messages/{message}', [\App\Http\Controllers\MessageController::class, 'destroy'])
-        ->name('messages.destroy');
-    
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
