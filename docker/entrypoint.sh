@@ -36,37 +36,30 @@ php /var/www/html/artisan view:cache
 # Run database migrations
 php /var/www/html/artisan migrate --force
 
-# Start PHP-FPM in the background
+#!/bin/bash
+set -e
+
+# Create required directories
+mkdir -p /var/run/php
+mkdir -p /var/run/nginx
+mkdir -p /var/log/nginx
+
+# Set permissions
+chown -R www-data:www-data /var/run/php
+chmod 755 /var/run/php
+chown -R www-data:www-data /var/www/html/storage
+chown -R www-data:www-data /var/www/html/bootstrap/cache
+chmod -R 775 /var/www/html/storage
+chmod -R 775 /var/www/html/bootstrap/cache
+
+# Start PHP-FPM
 echo "Starting PHP-FPM..."
 php-fpm -D -y /usr/local/etc/php-fpm.conf -F -R
 
 # Test Nginx configuration
 echo "Testing Nginx configuration..."
-if ! nginx -t; then
-    echo "Nginx configuration test failed"
-    exit 1
-fi
+nginx -t
 
-# Start Nginx in the background
+# Start Nginx in the foreground
 echo "Starting Nginx..."
-nginx -g 'daemon off;' &
-
-# Wait for services to start
-sleep 5
-
-# Check if Nginx is running
-if ! pgrep "nginx" > /dev/null; then
-    echo "Nginx failed to start"
-    exit 1
-fi
-
-# Check if PHP-FPM is running
-if ! pgrep "php-fpm" > /dev/null; then
-    echo "PHP-FPM is not running"
-    exit 1
-fi
-
-echo "Services are running. Showing logs..."
-
-# Keep the container running and show logs
-tail -f /var/log/nginx/error.log /var/log/nginx/access.log
+nginx -g 'daemon off;'

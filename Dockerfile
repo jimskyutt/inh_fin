@@ -66,8 +66,7 @@ RUN mkdir -p /var/run/php
 COPY docker/php-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Configure Nginx
-COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY docker/nginx/site.conf /etc/nginx/sites-available/default
+COPY docker/nginx/render.conf /etc/nginx/nginx.conf
 
 # Copy application files
 WORKDIR /var/www/html
