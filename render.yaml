@@ -1,0 +1,120 @@
+services:
+  - type: web
+    name: inh-fin
+    env: docker
+    region: singapore  # Choose the closest region to your users
+    plan: free  # Options: free, starter, standard, plus, pro, pro_plus, pro_max
+    buildCommand: |
+      docker build -t inh-fin .
+    startCommand: /usr/local/bin/entrypoint.sh
+    envVars:
+      # Required Laravel settings
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: SESSION_DRIVER
+        value: file
+      - key: SESSION_LIFETIME
+        value: "120"
+      - key: CACHE_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      
+      # Database configuration (update these with your database details)
+      - key: DB_CONNECTION
+        value: pgsql  # Render provides PostgreSQL by default
+      - key: DB_HOST
+        fromDatabase:
+          name: inh-fin-db
+          property:connectionString.host
+      - key: DB_PORT
+        fromDatabase:
+          name: inh-fin-db
+          property:connectionString.port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: inh-fin-db
+          property:connectionString.database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: inh-fin-db
+          property:connectionString.username
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: inh-fin-db
+          property:connectionString.password
+
+      # Application URL (update with your actual domain)
+      - key: APP_URL
+        value: https://inh-fin.onrender.com
+      - key: ASSET_URL
+        value: https://inh-fin.onrender.com
+
+      # Mail configuration (update with your mail provider details)
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        value: smtp.mailtrap.io  # Example using Mailtrap
+      - key: MAIL_PORT
+        value: "2525"
+      - key: MAIL_USERNAME
+        value: your-mail-username
+      - key: MAIL_PASSWORD
+        value: your-mail-password
+      - key: MAIL_ENCRYPTION
+        value: tls
+      - key: MAIL_FROM_ADDRESS
+        value: hello@example.com
+      - key: MAIL_FROM_NAME
+        value: "${APP_NAME}"
+
+      # Session and cache (for production, consider using Redis)
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_DRIVER
+        value: file
+
+      # File storage (for production, consider using S3)
+      - key: FILESYSTEM_DRIVER
+        value: public
+
+# Database service (PostgreSQL)
+databases:
+  - name: inh-fin-db
+    databaseName: inh_fin
+    user: inh_fin_user
+    plan: free  # Options: free, starter, standard, plus, pro, pro_plus, pro_max
+
+# Add any scheduled jobs here if needed
+# jobs:
+#   - name: schedule
+#     env: docker
+#     plan: free
+#     schedule: "0 0 * * *"  # Runs daily at midnight
+#     buildCommand: docker build -t inh-fin-scheduler .
+#     startCommand: php /var/www/html/artisan schedule:run
+#     envVars:
+#       - key: APP_ENV
+#         value: production
+#       # Add other required environment variables
+#       # ...
+
+# Add any background workers here if needed
+# services:
+#   - type: worker
+#     name: worker
+#     env: docker
+#     plan: free
+#     buildCommand: docker build -t inh-fin-worker .
+#     startCommand: php /var/www/html/artisan queue:work --tries=3 --timeout=90
+#     envVars:
+#       - key: APP_ENV
+#         value: production
+#       - key: QUEUE_CONNECTION
+#         value: redis  # Requires Redis add-on
+#       # Add other required environment variables
+#       # ...
