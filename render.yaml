@@ -9,10 +9,10 @@ services:
     startCommand: /usr/local/bin/entrypoint.sh
     envVars:
       # Required Laravel settings
-      - key: APP_ENV
-        value: production
-      - key: APP_DEBUG
-        value: "false"
+      - key: PORT
+        value: 80
+      - key: PHP_FPM_PORT
+        value: 9000
       - key: LOG_CHANNEL
         value: stderr
       - key: SESSION_DRIVER
