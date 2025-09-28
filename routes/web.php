@@ -122,7 +122,7 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
     Route::prefix('messages')->group(function () {
         Route::get('/', [\App\Http\Controllers\MessageController::class, 'index'])->name('messages.index');
         Route::get('/conversation/{user}', [\App\Http\Controllers\MessageController::class, 'getConversation'])->name('messages.conversation');
-        Route::get('/unread-count', [\App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.ajax.unread-count');
+        Route::get('/unread-count', [\App\Http\Controllers\MessageController::class, 'getUnreadCount'])->name('messages.unread-count');
         Route::post('/{user}/mark-as-read', [\App\Http\Controllers\MessageController::class, 'markAsRead'])->name('messages.mark-as-read');
         Route::post('/send', [\App\Http\Controllers\MessageController::class, 'sendMessage'])->name('messages.send');
         Route::put('/{message}', [\App\Http\Controllers\MessageController::class, 'update'])->name('messages.update');
